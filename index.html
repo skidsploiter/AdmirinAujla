@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Karan Aujla — Spotify Top 10 • Player + Backstories</title>
+<style>
+  /* Global Resets and Base Styles (Dark Theme) */
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #0d1117;
+    color: #c9d1d9;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+  /* Main Container */
+  .wrap {
+    max-width: 1200px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 450px 1fr;
+    gap: 30px;
+    background: #161b22;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    padding: 30px;
+  }
+
+  /* Header Styles */
+  header {
+    grid-column: 1 / -1;
+    margin-bottom: 10px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #2f343a;
+  }
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #58a6ff;
+  }
+  header p {
+    margin-top: 5px;
+    color: #8b949e;
+  }
+
+  /* Left Column - Main Spotify Player */
+  .left iframe {
+    width: 100%;
+    height: 420px;
+    border: 0;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Song Widget Style (List Item) */
+  .list ol {list-style: none;padding: 0;margin: 0;}
+  .list li {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    transition: background 0.3s, transform 0.2s;
+    border: 1px solid transparent;
+  }
+  .list li:hover {
+    background: rgba(88, 166, 255, 0.1);
+    border-color: #58a6ff;
+    transform: translateY(-2px);
+  }
+
+  .num {
+    width: 45px; height: 45px; flex-shrink: 0; border-radius: 10px;
+    background: #21262d; display: flex; align-items: center;
+    justify-content: center; font-weight: 700; font-size: 18px; color: #58a6ff;
+  }
+
+.album-art {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.album-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+  .songinfo {flex: 1;min-width: 0;}
+  .songinfo .title {font-weight: 600;font-size: 16px;margin: 0;color: #c9d1d9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+  .songinfo .meta {font-size: 13px;color: #8b949e;margin-top: 4px;line-height: 1.4;}
+
+  a.btn {
+    background: #58a6ff; color: #0d1117; padding: 8px 15px; border-radius: 8px;
+    font-size: 14px; font-weight: 600; text-decoration: none; white-space: nowrap;
+    transition: background 0.2s; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+  }
+  a.btn:hover {background: #79c0ff;box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);}
+  
+  /* --- POPUP/MODAL STYLES --- */
+  .modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85); display: none; justify-content: center;
+    align-items: center; z-index: 1000; opacity: 0; transition: opacity 0.3s ease;
+    backdrop-filter: blur(5px);
+  }
+  .modal.active {display: flex;opacity: 1;}
+
+  .modal-content {
+    background: #161b22; padding: 20px; border-radius: 15px; width: 90%;
+    max-width: 500px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+    position: relative; transform: scale(0.9); transition: transform 0.3s ease;
+  }
+  .modal.active .modal-content {transform: scale(1);}
+
+  .modal-close {
+    position: absolute; top: 10px; right: 15px; background: none; border: none;
+    color: #c9d1d9; font-size: 24px; cursor: pointer; line-height: 1; transition: color 0.2s;
+  }
+  .modal-close:hover {color: #58a6ff;}
+
+  /* Compact Spotify Player Height */
+  .spotify-embed-container iframe {
+    width: 100%;
+    height: 152px; 
+    border: 0;
+    border-radius: 10px;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 900px) {
+    .wrap {grid-template-columns: 1fr;padding: 20px;gap: 20px;}
+    .left iframe {height: 300px;}
+  }
+  @media (max-width: 500px) {
+    .list li {flex-wrap: wrap;padding: 10px;justify-content: space-between;}
+    .num, .album-art {display: none;}
+    .songinfo {flex-basis: 100%;}
+    a.btn {margin-top: 10px;width: 100%;text-align: center;}
+    .modal-content {width: 95%;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Karan Aujla — Spotify Top 10</h1>
+    <p>Play his most streamed songs right here (Spotify embed).</p>
+  </header>
+
+  <div class="left">
+    <iframe src="https://open.spotify.com/embed/artist/6DARBhWbfcS9E4yJzcliqQ" allow="encrypted-media" title="Karan Aujla Top 10"></iframe>
+  </div>
+
+  <div class="list">
+    <ol>
+<li>
+  <div class="num">1</div>
+  <div class="album-art">
+    <img src="https://c.saavncdn.com/621/P-POP-CULTURE-Punjabi-2025-20250820043757-500x500.jpg" alt="For A Reason" />
+  </div>
+  <div class="songinfo">
+    <p class="title">For A Reason</p>
+    <p class="meta">A collaboration that blends sharp verses with a catchy hook, showing Aujla’s balance of melody and rap.</p>
+  </div>
+  <a class="btn popup-trigger" data-spotify-link="https://open.spotify.com/embed/track/0cYohCh24y1aMjJmcS9RBl?si=27d200d022054861">Play Popup</a>
+</li>
+
+<li>
+  <div class="num">2</div>
+  <div class="album-art">
+    <img src="https://c.saavncdn.com/621/P-POP-CULTURE-Punjabi-2025-20250820043757-500x500.jpg" alt="MF Gabhru!" />
+  </div>
+  <div class="songinfo">
+    <p class="title">[🇪] MF Gabhru!</p>
+    <p class="meta">A fiery track with bold Punjabi lyrics, celebrated for its energy and swagger.</p>
+  </div>
+  <a class="btn popup-trigger" data-spotify-link="https://open.spotify.com/embed/track/5KLohKNLMLibqnG0FdmbvX?si=2a97b3b8a4e748aa">Play Popup</a>
+</li>
+
+<li>
+  <div class="num">3</div>
+  <div class="album-art">
+    <img src="https://c.saavncdn.com/178/Wavy-Punjabi-2024-20250523044332-500x500.jpg" alt="Wavy" />
+  </div>
+  <div class="songinfo">
+    <p class="title">Wavy</p>
+    <p class="meta">Smooth and stylish, "Wavy" became an anthem for its laid-back vibes and addictive beat.</p>
+  </div>
+  <a class="btn popup-trigger" data-spotify-link="https://open.spotify.com/embed/track/4d2jV5fmX6hbRwaRbY39dt?si=f5d621f929e4469f">Play Popup</a>
+</li>
+
+<li>
+  <div class="num">4</div>
+  <div class="album-art">
+    <img src="https://c.saavncdn.com/089/Winning-Speech-Punjabi-2024-20250321230248-500x500.jpg" alt="Winning Speech" />
+  </div>
+  <div class="songinfo">
+    <p class="title">Winning Speech</p>
+    <p class="meta">This track radiates confidence — it’s Aujla’s lyrical "victory lap".</p>
+  </div>
+  <a class="btn popup-trigger" data-spotify-link="https://open.spotify.com/embed/track/3FqtduiaqnFYvBgKuc6QWQ?si=ac44288cf770409e">Play Popup</a>
+</li>
+
+<li>
+  <div class="num">5</div>
+  <div class="album-art">
+    <img src="https://c.saavncdn.com/621/P-POP-CULTURE-Punjabi-2025-20250820043757-500x500.jpg" alt="You're U Tho" />
+  </div>
+  <div class="songinfo">
+    <p class="title">You're U Tho</p>
+    <p class="meta">A heartfelt song, mixing vulnerability and strength in Aujla’s storytelling style.</p>
+  </div>
+  <a class="btn popup-trigger" data-spotify-link="https://open.spotify.com/embed/track/7E4EhLK8mG4ORi3QR52r2A?si=4bf9df0c6a414f4e">Play Popup</a>
+</li>
+
+<li>
+  <div class="num">6</div>
+  <div class="album-art">
+    <img src="https://cdn-images.dzcdn.net/images/cover/31c1981fad3ce550505813e5a9317bec/1900x1900-000000-81-0-0.jpg" alt="At Peace" />
+  </div>
+  <div class="songinfo">
+    <p class="title">At Peace</p>
+    <p class="meta">Chilled and emotional, showing the softer side of Aujla’s music.</p>
+  </div>
+  <a class="btn popup-trigger" data-spotify-link="https://open.spotify.com/embed/track/1Ae2O8GhTe5KiDrrurzm41?si=44ba7793ffbf458c">Play Popup</a>
+</li>
+
+<li>
+  <div class="num">7</div>
+  <div class="album-art">
+    <img src="https://cdn-images.dzcdn.net/images/cover/22f4e4606f6b9a7bad96f74fa42c3778/1900x1900-000000-81-0-0.jpg" alt="Softly" />
+  </div>
+  <div class="songinfo">
+    <p class="title">Softly</p>
+    <p class="meta">One of his biggest hits — sleek, melodic, and massively streamed worldwide.</p>
+  </div>
+  <a class="btn popup-trigger" data-spotify-link="https://open.spotify.com/embed/track/0YQJoDL6f46J0n1rOVkpxJ?si=dc9ab7bc24fd43fc">Play Popup</a>
+</li>
+
+<li>
+  <div class="num">8</div>
+  <div class="album-art">
+    <img src="https://c.saavncdn.com/621/P-POP-CULTURE-Punjabi-2025-20250820043757-500x500.jpg" alt="HIM." />
+  </div>
+  <div class="songinfo">
+    <p class="title">HIM.</p>
+    <p class="meta">Assertive and powerful, "HIM." became a fan-favorite for its bold production.</p>
+  </div>
+  <a class="btn popup-trigger" data-spotify-link="https://open.spotify.com/embed/track/2TQy6HAI99JYNw2cKGYAE8?si=ab35bacd072842c9">Play Popup</a>
+</li>
+
+<li>
+  <div class="num">9</div>
+  <div class="album-art">
+    <img src="https://cdn-images.dzcdn.net/images/cover/22f4e4606f6b9a7bad96f74fa42c3778/1900x1900-000000-81-0-0.jpg" alt="Admirin' You" />
+  </div>
+  <div class="songinfo">
+    <p class="title">Admirin' You (feat. Preston Pablo)</p>
+    <p class="meta">A cross-genre collab with Preston Pablo — melodic, catchy, and widely streamed.</p>
+  </div>
+  <a class="btn popup-trigger" data-spotify-link="https://open.spotify.com/embed/track/6NJ8Z5GDoHe47R6gGX6sLq?si=97ed60c62f9c495b">Play Popup</a>
+</li>
+
+<li>
+  <div class="num">10</div>
+  <div class="album-art">
+    <img src="https://c.saavncdn.com/621/P-POP-CULTURE-Punjabi-2025-20250820043757-500x500.jpg" alt="Boyfriend" />
+  </div>
+  <div class="songinfo">
+    <p class="title">Boyfriend</p>
+    <p class="meta">A playful yet confident track with a strong hook that fans instantly recognize.</p>
+  </div>
+  <a class="btn popup-trigger" data-spotify-link="https://open.spotify.com/embed/track/3ExgWVPWOQts9RVBkqpdic?si=cbf7d43911b846a8">Play Popup</a>
+</li>
+
+    </ol>
+  </div>
+</div>
+
+<div class="modal" id="spotify-modal">
+    <div class="modal-content">
+        <button class="modal-close" id="close-modal">×</button>
+        <div class="spotify-embed-container">
+            </div>
+    </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('spotify-modal');
+    const closeModal = document.getElementById('close-modal');
+    const embedContainer = document.querySelector('.spotify-embed-container');
+    const triggerButtons = document.querySelectorAll('.popup-trigger');
+
+    const closePopup = () => {
+      modal.classList.remove('active');
+      setTimeout(() => {
+        embedContainer.innerHTML = '';
+      }, 300); 
+    };
+
+    triggerButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault(); 
+
+        const spotifyLink = button.getAttribute('data-spotify-link');
+
+        if (spotifyLink) {
+          // IMPORTANT: This iframe structure is the correct compact embed format requested.
+          const iframeHTML = `
+            <iframe 
+              data-testid="embed-iframe" 
+              style="border-radius:12px" 
+              src="${spotifyLink}" 
+              width="100%" 
+              height="152" 
+              frameBorder="0" 
+              allowfullscreen="" 
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+              loading="lazy" 
+              title="Spotify Compact Player">
+            </iframe>
+          `;
+
+          embedContainer.innerHTML = iframeHTML;
+          modal.classList.add('active');
+        }
+      });
+    });
+
+    closeModal.addEventListener('click', closePopup);
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closePopup();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        closePopup();
+      }
+    });
+  });
+</script>
+</body>
+</html>
